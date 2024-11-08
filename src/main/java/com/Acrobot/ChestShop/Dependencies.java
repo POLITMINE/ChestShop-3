@@ -3,7 +3,6 @@ package com.Acrobot.ChestShop;
 import com.Acrobot.Breeze.Utils.MaterialUtil;
 import com.Acrobot.ChestShop.Configuration.Properties;
 import com.Acrobot.ChestShop.Listeners.Economy.EconomyAdapter;
-import com.Acrobot.ChestShop.Listeners.Economy.Plugins.ReserveListener;
 import com.Acrobot.ChestShop.Listeners.Economy.Plugins.VaultListener;
 import com.Acrobot.ChestShop.Plugins.*;
 import com.google.common.collect.ImmutableMap;
@@ -94,11 +93,6 @@ public class Dependencies implements Listener {
         String plugin = "none";
 
         EconomyAdapter economy = null;
-
-        if(Bukkit.getPluginManager().getPlugin("Reserve") != null) {
-            plugin = "Reserve";
-            economy = ReserveListener.prepareListener();
-        }
 
         if(Bukkit.getPluginManager().getPlugin("Vault") != null) {
             plugin = "Vault";
