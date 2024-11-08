@@ -22,6 +22,12 @@ public class PriceChecker implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public static void onPreShopCreation(PreShopCreationEvent event) {
         String line = ChestShopSign.getPrice(event.getSignLines()).toUpperCase(Locale.ROOT);
+
+        boolean isPlayerPoints = line.toUpperCase().startsWith(ChestShopSign.PLAYER_POINTS_PREFIX);
+        if (isPlayerPoints) {
+            line = line.substring(ChestShopSign.PLAYER_POINTS_PREFIX.length());
+        }
+
         if (Properties.PRICE_PRECISION <= 0) {
             line = line.replaceAll("\\.\\d*", ""); //remove too many decimal places
         } else {
@@ -64,6 +70,10 @@ public class PriceChecker implements Listener {
             return;
         }
 
+        if (isPlayerPoints) {
+            line = ChestShopSign.PLAYER_POINTS_PREFIX + line;
+        }
+
         event.setSignLine(PRICE_LINE, line);
 
         if (!PriceUtil.hasBuyPrice(line) && !PriceUtil.hasSellPrice(line)) {
@@ -72,7 +82,7 @@ public class PriceChecker implements Listener {
     }
 
     private static boolean isInvalid(String part) {
-        char characters[] = {'B', 'S'};
+        char[] characters = {'B', 'S'};
 
         for (char character : characters) {
             if (part.contains(Character.toString(character))) {

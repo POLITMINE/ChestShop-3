@@ -1,5 +1,6 @@
 package com.Acrobot.ChestShop.Events.Economy;
 
+import com.Acrobot.ChestShop.CurrencyType;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -18,14 +19,20 @@ public class CurrencyAmountEvent extends EconomicEvent {
     private BigDecimal amount = BigDecimal.ZERO;
     private UUID account;
     private World world;
+    private final CurrencyType currencyType;
 
-    public CurrencyAmountEvent(UUID account, World world) {
+    public CurrencyAmountEvent(UUID account, World world, CurrencyType currencyType) {
         this.account = account;
         this.world = world;
+        this.currencyType = currencyType;
     }
 
-    public CurrencyAmountEvent(Player player) {
-        this(player.getUniqueId(), player.getWorld());
+    public CurrencyAmountEvent(Player player, CurrencyType currencyType) {
+        this(player.getUniqueId(), player.getWorld(), currencyType);
+    }
+
+    public CurrencyType getCurrencyType() {
+        return currencyType;
     }
 
     /**

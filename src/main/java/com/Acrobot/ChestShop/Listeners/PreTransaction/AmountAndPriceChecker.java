@@ -2,14 +2,14 @@ package com.Acrobot.ChestShop.Listeners.PreTransaction;
 
 import com.Acrobot.Breeze.Utils.InventoryUtil;
 import com.Acrobot.ChestShop.ChestShop;
+import com.Acrobot.ChestShop.CurrencyType;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyCheckEvent;
 import com.Acrobot.ChestShop.Events.PreTransactionEvent;
+import com.Acrobot.ChestShop.Signs.ChestShopSign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import java.math.BigDecimal;
 
 import static com.Acrobot.ChestShop.Events.PreTransactionEvent.TransactionOutcome.*;
 import static com.Acrobot.ChestShop.Events.TransactionEvent.TransactionType.BUY;
@@ -29,7 +29,8 @@ public class AmountAndPriceChecker implements Listener {
         ItemStack[] stock = event.getStock();
         Inventory ownerInventory = event.getOwnerInventory();
 
-        CurrencyCheckEvent currencyCheckEvent = new CurrencyCheckEvent(event.getExactPrice(), event.getClient());
+        final CurrencyType currencyType = ChestShopSign.getCurrencyType(event.getSign());
+        CurrencyCheckEvent currencyCheckEvent = new CurrencyCheckEvent(event.getExactPrice(), event.getClient(), currencyType);
         ChestShop.callEvent(currencyCheckEvent);
 
         if (!currencyCheckEvent.hasEnough()) {
@@ -51,9 +52,13 @@ public class AmountAndPriceChecker implements Listener {
         ItemStack[] stock = event.getStock();
         Inventory clientInventory = event.getClientInventory();
 
-        CurrencyCheckEvent currencyCheckEvent = new CurrencyCheckEvent(event.getExactPrice(),
-                                                        event.getOwnerAccount().getUuid(),
-                                                        event.getSign().getWorld());
+        final CurrencyType currencyType = ChestShopSign.getCurrencyType(event.getSign());
+        CurrencyCheckEvent currencyCheckEvent = new CurrencyCheckEvent(
+                event.getExactPrice(),
+                event.getOwnerAccount().getUuid(),
+                event.getSign().getWorld(),
+                currencyType
+        );
         ChestShop.callEvent(currencyCheckEvent);
 
         if (!currencyCheckEvent.hasEnough()) {

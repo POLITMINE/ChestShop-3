@@ -6,6 +6,7 @@ import com.Acrobot.Breeze.Utils.PriceUtil;
 import com.Acrobot.ChestShop.ChestShop;
 import com.Acrobot.ChestShop.Configuration.Messages;
 import com.Acrobot.ChestShop.Configuration.Properties;
+import com.Acrobot.ChestShop.CurrencyType;
 import com.Acrobot.ChestShop.Events.AccountQueryEvent;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyFormatEvent;
 import com.Acrobot.ChestShop.Events.ItemInfoEvent;
@@ -84,15 +85,16 @@ public class ShopInfoListener implements Listener {
 
             ChestShop.callEvent(new ItemInfoEvent(event.getSender(), item));
 
+            final CurrencyType currencyType = ChestShopSign.getCurrencyType(event.getSign());
             if (!buyPrice.equals(PriceUtil.NO_PRICE)) {
-                CurrencyFormatEvent cfe = ChestShop.callEvent(new CurrencyFormatEvent(buyPrice));
+                CurrencyFormatEvent cfe = ChestShop.callEvent(new CurrencyFormatEvent(buyPrice, currencyType));
                 Messages.shopinfo_buy.send(event.getSender(),
                         "amount", String.valueOf(amount),
                         "price", cfe.getFormattedAmount()
                 );
             }
             if (!sellPrice.equals(PriceUtil.NO_PRICE)) {
-                CurrencyFormatEvent cfe = ChestShop.callEvent(new CurrencyFormatEvent(sellPrice));
+                CurrencyFormatEvent cfe = ChestShop.callEvent(new CurrencyFormatEvent(sellPrice, currencyType));
                 Messages.shopinfo_sell.send(event.getSender(),
                         "amount", String.valueOf(amount),
                         "price", cfe.getFormattedAmount()

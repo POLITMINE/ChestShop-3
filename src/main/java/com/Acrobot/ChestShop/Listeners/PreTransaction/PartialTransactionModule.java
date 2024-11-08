@@ -4,11 +4,13 @@ import com.Acrobot.Breeze.Utils.InventoryUtil;
 import com.Acrobot.Breeze.Utils.MaterialUtil;
 import com.Acrobot.ChestShop.ChestShop;
 import com.Acrobot.ChestShop.Configuration.Properties;
+import com.Acrobot.ChestShop.CurrencyType;
 import com.Acrobot.ChestShop.Economy.Economy;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyAmountEvent;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyCheckEvent;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyHoldEvent;
 import com.Acrobot.ChestShop.Events.PreTransactionEvent;
+import com.Acrobot.ChestShop.Signs.ChestShopSign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -43,12 +45,13 @@ public class PartialTransactionModule implements Listener {
 
         BigDecimal pricePerItem = event.getExactPrice().divide(BigDecimal.valueOf(InventoryUtil.countItems(event.getStock())), MathContext.DECIMAL128);
 
-        CurrencyAmountEvent currencyAmountEvent = new CurrencyAmountEvent(client);
+        final CurrencyType currencyType = ChestShopSign.getCurrencyType(event.getSign());
+        CurrencyAmountEvent currencyAmountEvent = new CurrencyAmountEvent(client, currencyType);
         ChestShop.callEvent(currencyAmountEvent);
 
         BigDecimal walletMoney = currencyAmountEvent.getAmount();
 
-        CurrencyCheckEvent currencyCheckEvent = new CurrencyCheckEvent(event.getExactPrice(), client);
+        CurrencyCheckEvent currencyCheckEvent = new CurrencyCheckEvent(event.getExactPrice(), client, currencyType);
         ChestShop.callEvent(currencyCheckEvent);
 
         if (!currencyCheckEvent.hasEnough()) {
@@ -108,7 +111,7 @@ public class PartialTransactionModule implements Listener {
 
         UUID seller = event.getOwnerAccount().getUuid();
 
-        CurrencyHoldEvent currencyHoldEvent = new CurrencyHoldEvent(event.getExactPrice(), seller, client.getWorld());
+        CurrencyHoldEvent currencyHoldEvent = new CurrencyHoldEvent(event.getExactPrice(), seller, client.getWorld(), currencyType);
         ChestShop.callEvent(currencyHoldEvent);
 
         if (!currencyHoldEvent.canHold()) {
@@ -128,12 +131,13 @@ public class PartialTransactionModule implements Listener {
         BigDecimal pricePerItem = event.getExactPrice().divide(BigDecimal.valueOf(InventoryUtil.countItems(event.getStock())), MathContext.DECIMAL128);
 
 
+        final CurrencyType currencyType = ChestShopSign.getCurrencyType(event.getSign());
         if (Economy.isOwnerEconomicallyActive(event.getOwnerInventory())) {
-            CurrencyCheckEvent currencyCheckEvent = new CurrencyCheckEvent(event.getExactPrice(), owner, client.getWorld());
+            CurrencyCheckEvent currencyCheckEvent = new CurrencyCheckEvent(event.getExactPrice(), owner, client.getWorld(), currencyType);
             ChestShop.callEvent(currencyCheckEvent);
 
             if (!currencyCheckEvent.hasEnough()) {
-                CurrencyAmountEvent currencyAmountEvent = new CurrencyAmountEvent(owner, client.getWorld());
+                CurrencyAmountEvent currencyAmountEvent = new CurrencyAmountEvent(owner, client.getWorld(), currencyType);
                 ChestShop.callEvent(currencyAmountEvent);
 
                 BigDecimal walletMoney = currencyAmountEvent.getAmount();
@@ -192,7 +196,7 @@ public class PartialTransactionModule implements Listener {
             event.setStock(itemsFit);
         }
 
-        CurrencyHoldEvent currencyHoldEvent = new CurrencyHoldEvent(event.getExactPrice(), client);
+        CurrencyHoldEvent currencyHoldEvent = new CurrencyHoldEvent(event.getExactPrice(), client, currencyType);
         ChestShop.callEvent(currencyHoldEvent);
 
         if (!currencyHoldEvent.canHold()) {

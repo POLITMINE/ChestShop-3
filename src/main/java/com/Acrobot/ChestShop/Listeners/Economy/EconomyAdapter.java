@@ -1,6 +1,7 @@
 package com.Acrobot.ChestShop.Listeners.Economy;
 
 import com.Acrobot.ChestShop.ChestShop;
+import com.Acrobot.ChestShop.CurrencyType;
 import com.Acrobot.ChestShop.Events.Economy.AccountCheckEvent;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyAddEvent;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyAmountEvent;
@@ -9,14 +10,13 @@ import com.Acrobot.ChestShop.Events.Economy.CurrencyFormatEvent;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyHoldEvent;
 import com.Acrobot.ChestShop.Events.Economy.CurrencySubtractEvent;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyTransferEvent;
+import com.Acrobot.ChestShop.Signs.ChestShopSign;
 import com.Acrobot.ChestShop.UUIDs.NameManager;
 import org.bukkit.event.Listener;
 
 import java.math.BigDecimal;
 
 public abstract class EconomyAdapter implements Listener {
-
-    public abstract ProviderInfo getProviderInfo();
 
     public abstract void onAmountCheck(CurrencyAmountEvent event);
 
@@ -45,7 +45,9 @@ public abstract class EconomyAdapter implements Listener {
         }
 
         BigDecimal amountSent = event.getAmountSent();
-        CurrencySubtractEvent currencySubtractEvent = new CurrencySubtractEvent(amountSent, event.getSender(), event.getWorld());
+
+        final CurrencyType currencyType = ChestShopSign.getCurrencyType(event.getTransactionEvent().getSign());
+        CurrencySubtractEvent currencySubtractEvent = new CurrencySubtractEvent(amountSent, event.getSender(), event.getWorld(), currencyType);
         if (!NameManager.isAdminShop(event.getSender())) {
             ChestShop.callEvent(currencySubtractEvent);
         } else {
@@ -57,7 +59,7 @@ public abstract class EconomyAdapter implements Listener {
         }
 
         BigDecimal amountReceived = event.getAmountReceived().subtract(amountSent.subtract(currencySubtractEvent.getAmount()));
-        CurrencyAddEvent currencyAddEvent = new CurrencyAddEvent(amountReceived, event.getReceiver(), event.getWorld());
+        CurrencyAddEvent currencyAddEvent = new CurrencyAddEvent(amountReceived, event.getReceiver(), event.getWorld(), currencyType);
         if (!NameManager.isAdminShop(event.getReceiver())) {
             ChestShop.callEvent(currencyAddEvent);
         } else {
@@ -70,27 +72,11 @@ public abstract class EconomyAdapter implements Listener {
             CurrencyAddEvent currencyResetEvent = new CurrencyAddEvent(
                     currencySubtractEvent.getAmount(),
                     event.getSender(),
-                    event.getWorld()
+                    event.getWorld(),
+                    currencyType
             );
             ChestShop.callEvent(currencyResetEvent);
         }
     }
 
-    public static class ProviderInfo {
-        private final String name;
-        private final String version;
-
-        public ProviderInfo(String name, String version) {
-            this.name = name;
-            this.version = version;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getVersion() {
-            return version;
-        }
-    }
 }

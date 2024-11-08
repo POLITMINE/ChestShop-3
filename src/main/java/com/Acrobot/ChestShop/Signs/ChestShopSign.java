@@ -6,6 +6,7 @@ import com.Acrobot.Breeze.Utils.QuantityUtil;
 import com.Acrobot.Breeze.Utils.StringUtil;
 import com.Acrobot.ChestShop.Configuration.Properties;
 import com.Acrobot.ChestShop.Containers.AdminInventory;
+import com.Acrobot.ChestShop.CurrencyType;
 import com.Acrobot.ChestShop.Database.Account;
 import com.Acrobot.ChestShop.Events.AccountQueryEvent;
 import com.Acrobot.ChestShop.Permission;
@@ -32,21 +33,24 @@ import static com.Acrobot.Breeze.Utils.ImplementationAdapter.getState;
  * @author Acrobot
  */
 public class ChestShopSign {
+
     public static final byte NAME_LINE = 0;
     public static final byte QUANTITY_LINE = 1;
     public static final byte PRICE_LINE = 2;
     public static final byte ITEM_LINE = 3;
+    public static final String PLAYER_POINTS_PREFIX = "RUB ";
 
     public static final Pattern[][] SHOP_SIGN_PATTERN = {
-            { Pattern.compile("^[1-9][0-9]{0,5}$"), QuantityUtil.QUANTITY_LINE_WITH_COUNTER_PATTERN },
+            {Pattern.compile("^[1-9][0-9]{0,5}$"), QuantityUtil.QUANTITY_LINE_WITH_COUNTER_PATTERN},
             {
-                Pattern.compile("(?i)^((\\d*([.e]\\d+)?)|free)$"),
-                Pattern.compile("(?i)^([BS] *((\\d*([.e]\\d+)?)|free))( *: *([BS] *((\\d*([.e]\\d+)?)|free)))?$"),
-                Pattern.compile("(?i)^(((\\d*([.e]\\d+)?)|free) *[BS])( *: *([BS] *((\\d*([.e]\\d+)?)|free)))?$"),
-                Pattern.compile("(?i)^(((\\d*([.e]\\d+)?)|free) *[BS]) *: *(((\\d*([.e]\\d+)?)|free) *[BS])$"),
-                Pattern.compile("(?i)^([BS] *((\\d*([.e]\\d+)?)|free)) *: *(((\\d*([.e]\\d+)?)|free) *[BS])$"),
+                    Pattern.compile("(?i)^(?:RUB )?((\\d*([.e]\\d+)?)|free)$"),
+                    Pattern.compile("(?i)^(?:RUB )?([BS] *((\\d*([.e]\\d+)?)|free))( *: *([BS] *((\\d*([.e]\\d+)?)|free)))?$"),
+                    Pattern.compile("(?i)^(?:RUB )?(((\\d*([.e]\\d+)?)|free) *[BS])( *: *([BS] *((\\d*([.e]\\d+)?)|free)))?$"),
+                    Pattern.compile("(?i)^(?:RUB )?(((\\d*([.e]\\d+)?)|free) *[BS]) *: *(((\\d*([.e]\\d+)?)|free) *[BS])$"),
+                    Pattern.compile("(?i)^(?:RUB )?([BS] *((\\d*([.e]\\d+)?)|free)) *: *(((\\d*([.e]\\d+)?)|free) *[BS])$"),
+
             },
-            { Pattern.compile("^[\\p{L}\\d_? #:\\-]+$") }
+            {Pattern.compile("^[\\p{L}\\d_? #:\\-]+$")}
     };
     public static final String AUTOFILL_CODE = "?";
 
@@ -73,8 +77,7 @@ public class ChestShopSign {
     public static boolean isValid(String[] lines) {
         lines = StringUtil.stripColourCodes(lines);
         return isValidPreparedSign(lines)
-                && (getPrice(lines).toUpperCase(Locale.ROOT).contains("B")
-                        || getPrice(lines).toUpperCase(Locale.ROOT).contains("S"))
+                && (getPrice(lines).toUpperCase(Locale.ROOT).contains("B") || getPrice(lines).toUpperCase(Locale.ROOT).contains("S"))
                 && !getOwner(lines).isEmpty();
     }
 
@@ -274,6 +277,10 @@ public class ChestShopSign {
      */
     public static String getPrice(Sign sign) {
         return StringUtil.strip(StringUtil.stripColourCodes(sign.getLine(PRICE_LINE)));
+    }
+
+    public static CurrencyType getCurrencyType(Sign sign) {
+        return getPrice(sign).startsWith(PLAYER_POINTS_PREFIX) ? CurrencyType.PLAYER_POINTS : CurrencyType.VAULT;
     }
 
     /**

@@ -2,6 +2,7 @@ package com.Acrobot.ChestShop.Economy;
 
 import com.Acrobot.ChestShop.ChestShop;
 import com.Acrobot.ChestShop.Configuration.Properties;
+import com.Acrobot.ChestShop.CurrencyType;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyAddEvent;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyCheckEvent;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyFormatEvent;
@@ -38,7 +39,7 @@ public class Economy {
      */
     @Deprecated
     public static boolean add(UUID name, World world, double amount) {
-        CurrencyAddEvent event = new CurrencyAddEvent(BigDecimal.valueOf(amount), name, world);
+        CurrencyAddEvent event = new CurrencyAddEvent(BigDecimal.valueOf(amount), name, world, CurrencyType.VAULT);
         ChestShop.callEvent(event);
 
         return event.wasHandled();
@@ -49,7 +50,7 @@ public class Economy {
      */
     @Deprecated
     public static boolean subtract(UUID name, World world, double amount) {
-        CurrencySubtractEvent event = new CurrencySubtractEvent(BigDecimal.valueOf(amount), name, world);
+        CurrencySubtractEvent event = new CurrencySubtractEvent(BigDecimal.valueOf(amount), name, world, CurrencyType.VAULT);
         ChestShop.callEvent(event);
 
         return event.wasHandled();
@@ -60,14 +61,14 @@ public class Economy {
      */
     @Deprecated
     public static boolean hasEnough(UUID name, World world, double amount) {
-        CurrencyCheckEvent event = new CurrencyCheckEvent(BigDecimal.valueOf(amount), name, world);
+        CurrencyCheckEvent event = new CurrencyCheckEvent(BigDecimal.valueOf(amount), name, world, CurrencyType.VAULT);
         ChestShop.callEvent(event);
 
         return event.hasEnough();
     }
 
     public static String formatBalance(BigDecimal amount) {
-        CurrencyFormatEvent event = new CurrencyFormatEvent(amount);
+        CurrencyFormatEvent event = new CurrencyFormatEvent(amount, CurrencyType.VAULT);
         ChestShop.callEvent(event);
 
         return event.getFormattedAmount();

@@ -2,9 +2,11 @@ package com.Acrobot.ChestShop.Listeners.Economy;
 
 import com.Acrobot.ChestShop.ChestShop;
 import com.Acrobot.ChestShop.Configuration.Properties;
+import com.Acrobot.ChestShop.CurrencyType;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyAddEvent;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyTransferEvent;
 import com.Acrobot.ChestShop.Permission;
+import com.Acrobot.ChestShop.Signs.ChestShopSign;
 import com.Acrobot.ChestShop.UUIDs.NameManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -51,11 +53,15 @@ public class TaxModule implements Listener {
                 BigDecimal tax = getTaxAmount(event.getAmountReceived(), taxAmount);
                 BigDecimal taxedAmount = event.getAmountReceived().subtract(tax);
                 event.setAmountReceived(taxedAmount);
+
+                final CurrencyType currencyType = ChestShopSign.getCurrencyType(event.getTransactionEvent().getSign());
                 if (NameManager.getServerEconomyAccount() != null) {
                     ChestShop.callEvent(new CurrencyAddEvent(
                             tax,
                             NameManager.getServerEconomyAccount().getUuid(),
-                            event.getWorld()));
+                            event.getWorld(),
+                            currencyType
+                    ));
                 }
                 ChestShop.getShopLogger().info(String.format(TAX_RECEIVED_MESSAGE, taxAmount, tax, taxedAmount));
             }

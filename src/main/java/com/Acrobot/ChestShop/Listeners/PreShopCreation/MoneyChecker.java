@@ -2,6 +2,7 @@ package com.Acrobot.ChestShop.Listeners.PreShopCreation;
 
 import com.Acrobot.ChestShop.ChestShop;
 import com.Acrobot.ChestShop.Configuration.Properties;
+import com.Acrobot.ChestShop.CurrencyType;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyCheckEvent;
 import com.Acrobot.ChestShop.Events.PreShopCreationEvent;
 import com.Acrobot.ChestShop.Permission;
@@ -38,7 +39,8 @@ public class MoneyChecker implements Listener {
             return;
         }
 
-        CurrencyCheckEvent currencyCheckEvent = new CurrencyCheckEvent(shopCreationPrice, player);
+        final CurrencyType currencyType = ChestShopSign.getCurrencyType(event.getSign());
+        CurrencyCheckEvent currencyCheckEvent = new CurrencyCheckEvent(shopCreationPrice, player, currencyType);
         ChestShop.callEvent(currencyCheckEvent);
 
         if (!currencyCheckEvent.hasEnough()) {

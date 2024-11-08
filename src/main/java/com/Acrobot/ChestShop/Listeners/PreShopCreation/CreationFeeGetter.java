@@ -3,6 +3,7 @@ package com.Acrobot.ChestShop.Listeners.PreShopCreation;
 import com.Acrobot.ChestShop.ChestShop;
 import com.Acrobot.ChestShop.Configuration.Messages;
 import com.Acrobot.ChestShop.Configuration.Properties;
+import com.Acrobot.ChestShop.CurrencyType;
 import com.Acrobot.ChestShop.Economy.Economy;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyAddEvent;
 import com.Acrobot.ChestShop.Events.Economy.CurrencySubtractEvent;
@@ -42,7 +43,8 @@ public class CreationFeeGetter implements Listener {
             return;
         }
 
-        CurrencySubtractEvent subtractionEvent = new CurrencySubtractEvent(shopCreationPrice, player);
+        final CurrencyType currencyType = ChestShopSign.getCurrencyType(event.getSign());
+        CurrencySubtractEvent subtractionEvent = new CurrencySubtractEvent(shopCreationPrice, player, currencyType);
         ChestShop.callEvent(subtractionEvent);
 
         if (!subtractionEvent.wasHandled()) {
@@ -55,7 +57,9 @@ public class CreationFeeGetter implements Listener {
             CurrencyAddEvent currencyAddEvent = new CurrencyAddEvent(
                     shopCreationPrice,
                     NameManager.getServerEconomyAccount().getUuid(),
-                    player.getWorld());
+                    player.getWorld(),
+                    currencyType
+            );
             ChestShop.callEvent(currencyAddEvent);
         }
 

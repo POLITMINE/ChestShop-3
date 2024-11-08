@@ -183,7 +183,7 @@ public class PlayerInteract implements Listener {
 
     private static PreTransactionEvent preparePreTransactionEvent(Sign sign, Player player, Action action) {
         String name = ChestShopSign.getOwner(sign);
-        String prices = ChestShopSign.getPrice(sign);
+        String priceLine = ChestShopSign.getPrice(sign);
         String material = ChestShopSign.getItem(sign);
 
         AccountQueryEvent accountQueryEvent = new AccountQueryEvent(name);
@@ -207,7 +207,7 @@ public class PlayerInteract implements Listener {
         }
 
         Action buy = Properties.REVERSE_BUTTONS ? LEFT_CLICK_BLOCK : RIGHT_CLICK_BLOCK;
-        BigDecimal price = (action == buy ? PriceUtil.getExactBuyPrice(prices) : PriceUtil.getExactSellPrice(prices));
+        BigDecimal price = (action == buy ? PriceUtil.getExactBuyPrice(priceLine) : PriceUtil.getExactSellPrice(priceLine));
 
         Container shopBlock = uBlock.findConnectedContainer(sign);
         Inventory ownerInventory = shopBlock != null ? shopBlock.getInventory() : null;

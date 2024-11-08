@@ -1,5 +1,6 @@
 package com.Acrobot.ChestShop.Events.Economy;
 
+import com.Acrobot.ChestShop.CurrencyType;
 import org.bukkit.event.HandlerList;
 
 import java.math.BigDecimal;
@@ -13,10 +14,16 @@ public class CurrencyFormatEvent extends EconomicEvent {
     private static final HandlerList handlers = new HandlerList();
 
     private final BigDecimal amount;
+    private final CurrencyType currencyType;
     private String formattedAmount = "";
 
-    public CurrencyFormatEvent(BigDecimal amount) {
+    public CurrencyFormatEvent(BigDecimal amount, CurrencyType currencyType) {
         this.amount = amount;
+        this.currencyType = currencyType;
+    }
+
+    public CurrencyType getCurrencyType() {
+        return currencyType;
     }
 
     /**

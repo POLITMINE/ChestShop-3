@@ -3,7 +3,7 @@ package com.Acrobot.ChestShop;
 import com.Acrobot.Breeze.Utils.MaterialUtil;
 import com.Acrobot.ChestShop.Configuration.Properties;
 import com.Acrobot.ChestShop.Listeners.Economy.EconomyAdapter;
-import com.Acrobot.ChestShop.Listeners.Economy.Plugins.VaultListener;
+import com.Acrobot.ChestShop.Listeners.Economy.Plugins.VaultAndPlayerPointsListener;
 import com.Acrobot.ChestShop.Plugins.*;
 import com.google.common.collect.ImmutableMap;
 import org.bstats.charts.DrilldownPie;
@@ -90,25 +90,7 @@ public class Dependencies implements Listener {
     }
 
     private static boolean loadEconomy() {
-        String plugin = "none";
-
-        EconomyAdapter economy = null;
-
-        if(Bukkit.getPluginManager().getPlugin("Vault") != null) {
-            plugin = "Vault";
-            economy = VaultListener.initializeVault();
-        }
-
-        if (economy == null) {
-            ChestShop.getBukkitLogger().severe("No Economy adapter found! You need to install either Vault or Reserve!");
-            return false;
-        }
-
-        ChestShop.getMetrics().addCustomChart(ChestShop.createStaticDrilldownStat("economyAdapter", plugin, Bukkit.getPluginManager().getPlugin(plugin).getDescription().getVersion()));
-        ChestShop.getMetrics().addCustomChart(ChestShop.createStaticDrilldownStat("economyPlugin", economy.getProviderInfo().getName(), economy.getProviderInfo().getVersion()));
-
-        ChestShop.registerListener(economy);
-        ChestShop.getBukkitLogger().info(plugin + " loaded!");
+        ChestShop.registerListener(VaultAndPlayerPointsListener.initialize());
         return true;
     }
 

@@ -3,6 +3,7 @@ package com.Acrobot.ChestShop.Listeners.ShopRemoval;
 import com.Acrobot.ChestShop.ChestShop;
 import com.Acrobot.ChestShop.Configuration.Messages;
 import com.Acrobot.ChestShop.Configuration.Properties;
+import com.Acrobot.ChestShop.CurrencyType;
 import com.Acrobot.ChestShop.Database.Account;
 import com.Acrobot.ChestShop.Economy.Economy;
 import com.Acrobot.ChestShop.Events.AccountQueryEvent;
@@ -27,6 +28,7 @@ import static com.Acrobot.ChestShop.Signs.ChestShopSign.AUTOFILL_CODE;
  * @author Acrobot
  */
 public class ShopRefundListener implements Listener {
+
     @EventHandler(priority = EventPriority.MONITOR)
     public static void onShopDestroy(ShopDestroyedEvent event) {
         BigDecimal refundPrice = Properties.SHOP_REFUND_PRICE;
@@ -46,14 +48,17 @@ public class ShopRefundListener implements Listener {
             return;
         }
 
-        CurrencyAddEvent currencyEvent = new CurrencyAddEvent(refundPrice, account.getUuid(), event.getSign().getWorld());
+        final CurrencyType currencyType = ChestShopSign.getCurrencyType(event.getSign());
+        CurrencyAddEvent currencyEvent = new CurrencyAddEvent(refundPrice, account.getUuid(), event.getSign().getWorld(), currencyType);
         ChestShop.callEvent(currencyEvent);
 
         if (NameManager.getServerEconomyAccount() != null) {
             CurrencySubtractEvent currencySubtractEvent = new CurrencySubtractEvent(
                     refundPrice,
                     NameManager.getServerEconomyAccount().getUuid(),
-                    event.getSign().getWorld());
+                    event.getSign().getWorld(),
+                    currencyType
+            );
             ChestShop.callEvent(currencySubtractEvent);
         }
 
