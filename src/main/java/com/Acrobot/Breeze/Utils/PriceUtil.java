@@ -1,5 +1,7 @@
 package com.Acrobot.Breeze.Utils;
 
+import com.Acrobot.ChestShop.Signs.ChestShopSign;
+
 import java.math.BigDecimal;
 import java.util.Locale;
 
@@ -24,6 +26,10 @@ public class PriceUtil {
      * @return exact price
      */
     public static BigDecimal getExact(String text, char indicator) {
+        if (text.startsWith(ChestShopSign.PLAYER_POINTS_PREFIX)) {
+            text = text.substring(ChestShopSign.PLAYER_POINTS_PREFIX.length());
+        }
+
         String[] split = text.replace(" ", "").toLowerCase(Locale.ROOT).split(":");
         String character = String.valueOf(indicator).toLowerCase(Locale.ROOT);
 
